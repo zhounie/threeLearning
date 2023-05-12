@@ -1,0 +1,153 @@
+<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.js"></script><title>Document</title><style>html, body {
+            padding: 0;
+            margin: 0;
+        }</style><script defer="defer" src="1.js"></script><script defer="defer" src="2.js"></script><script defer="defer" src="3.js"></script></head><body></body></html><script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script><script type="importmap">{
+      "imports": {
+        "three": "https://unpkg.com/three@0.151.3/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.151.3/examples/jsm/"
+      }
+    }</script><script async type="module">import * as THREE from 'three';
+    import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
+    import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+    import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+    import Stats from 'https://cdnjs.cloudflare.com/ajax/libs/stats.js/r17/Stats.min.js';
+    
+    
+    const controls = new function() {
+        this.rotationSpeed = 0.02;
+        this.bouncingSpeed = 0.03;
+    }
+    
+    const gui = new dat.GUI()
+    gui.add(controls, 'rotationSpeed', 0, 0.5)
+    gui.add(controls, 'bouncingSpeed', 0, 0.5)
+
+
+    const stats = new Stats()
+
+    const scene = new THREE.Scene()
+    
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.2, 1000);
+
+
+    const renderer = new THREE.WebGLRenderer()
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0xcccccc)
+    document.body.appendChild(renderer.domElement)
+
+    const trackballControls = new TrackballControls(camera, renderer.domElement)
+    const clock = new THREE.Clock()
+
+    
+    const texture = new THREE.TextureLoader().load('./public/ccc.jpg')
+
+
+    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    const material = new THREE.MeshLambertMaterial({ map: texture });
+    const cube = new THREE.Mesh(geometry, material);
+    cube.position.set(2,0,-4)
+    scene.add(cube);
+
+
+    const sphere = new THREE.SphereGeometry()
+    const material3 = new THREE.MeshLambertMaterial({ map: texture });
+    const cube3 = new THREE.Mesh(sphere, material3)
+    scene.add(cube3)
+
+
+    let loadFont;
+    const fontLoader = new FontLoader()
+    fontLoader.load('./public/JMH_Regular.json', function(response) {
+        loadFont = response
+        renderer.render(scene, camera)
+    })
+    const fontOptions = {
+        size: 90,
+        height: 90,
+        font: loadFont,
+        steps: 1
+    }
+
+    function createMesh(geom) {
+
+        // assign two materials
+        //            var meshMaterial = new THREE.MeshLambertMaterial({color: 0xff5555});
+        //            var meshMaterial = new THREE.MeshNormalMaterial();
+        var meshMaterial = new THREE.MeshPhongMaterial({
+            specular: 0xffffff,
+            color: 0xeeffff,
+            shininess: 100,
+            metal: true
+        });
+        //            meshMaterial.side=THREE.DoubleSide;
+        // create a multimaterial
+        var plane = THREE.SceneUtils.createMultiMaterialObject(geom, [meshMaterial]);
+
+        return plane;
+        }
+
+    const text = createMesh(new TextGeometry("你好", fontOptions))
+    scene.add(text)
+
+
+    const geometry2 = new THREE.BoxGeometry(1, 1, 1);
+    const material2 = new THREE.MeshLambertMaterial({ color: 0x00ff00 });
+    const cube2 = new THREE.Mesh(geometry2, material2);
+    scene.add(cube2);
+    
+    camera.position.z = 5;
+
+    const light = new THREE.SpotLight(0XFFFFFF);
+    light.position.set(10, 0, 15)
+    light.castShadow = true
+    light.shadow.mapSize = new THREE.Vector2(1024, 1024);
+    light.shadow.camera.far = 130;
+    light.shadow.camera.near = 40
+    scene.add(light)
+
+
+    const audio = new THREE.AudioListener()
+    camera.add(audio)
+
+    const pos1 = new THREE.PositionalAudio(audio)
+    const audioLoader = new THREE.AudioLoader();
+    audioLoader.load('./public/bbb.mp3', function(buffer) {
+        pos1.setBuffer(buffer)
+        pos1.setRefDistance(30)
+        pos1.play()
+        pos1.setRolloffFactor(10)
+        pos1.setLoop(true)
+    })
+
+
+
+    function initStats(type) {
+        let panelType = (typeof type !== 'undefine' && type) &&(!isNaN(type)) ? parseInt(type) : 0;
+        stats.showPanel(panelType);
+        document.body.appendChild(stats.dom);
+        return stats;
+    }
+
+    initStats()
+
+    let step = 0
+    function animate () {
+        stats.update()
+        requestAnimationFrame(animate);
+        trackballControls.update(clock.getDelta());
+
+        cube.rotation.x += controls.rotationSpeed;
+        cube.rotation.y += controls.rotationSpeed;
+
+        cube3.rotation.y += controls.rotationSpeed;
+        cube3.rotation.x += controls.rotationSpeed;
+
+        step += controls.bouncingSpeed;
+        cube2.rotation.x += controls.rotationSpeed;
+        cube2.rotation.y += controls.rotationSpeed;
+        // cube2.position.x = 0;
+        cube2.position.y = 3 - 1 * (Math.abs(Math.sin(step)));
+        renderer.render(scene, camera)
+    }
+
+    animate()</script>

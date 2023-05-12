@@ -5,11 +5,25 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "http-server ./"
+    "dev": "webpack serve --open --config ./build/webpack.config.js --mode development",
+    "build": "webpack --config ./build/webpack.config.js --mode production"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "http-server": "^14.1.1"
+    "gsap": "^3.11.5",
+    "http-server": "^14.1.1",
+    "three": "^0.152.2"
+  },
+  "devDependencies": {
+    "@types/three": "^0.152.0",
+    "copy-webpack-plugin": "^11.0.0",
+    "glob": "^10.2.3",
+    "html-webpack-plugin": "^5.5.1",
+    "ts-loader": "^9.4.2",
+    "typescript": "^5.0.4",
+    "webpack": "^5.82.1",
+    "webpack-cli": "^5.1.1",
+    "webpack-dev-server": "^4.15.0"
   }
 }
