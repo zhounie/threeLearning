@@ -1,6 +1,7 @@
 import * as THREE from 'three'
+import * as dat from 'dat.gui'
 
-
+const gui = new dat.GUI();
 
 const camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10 );
 camera.position.z = 1;
